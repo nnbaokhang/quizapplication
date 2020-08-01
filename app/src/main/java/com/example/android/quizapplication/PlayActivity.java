@@ -15,12 +15,23 @@ public class PlayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
+        CardView computerCard = findViewById(R.id.computer_card);
+        computerCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Intent phyIntent = new Intent(PlayActivity.this, PhysicsActivity.class);
+                Intent computerIntent = new Intent(PlayActivity.this, ComputerScienceActivity.class);
+                startActivity(computerIntent);
+            }
+        });
+
         CardView phy = findViewById(R.id.phy_card);
         // Set a click listener on that View
         phy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent phyIntent = new Intent(PlayActivity.this, PhysicsActivity.class);
+               // Intent phyIntent = new Intent(PlayActivity.this, PhysicsActivity.class);
+                Intent phyIntent = new Intent(PlayActivity.this, TestPhysicActivity.class);
                 startActivity(phyIntent);
             }
         });

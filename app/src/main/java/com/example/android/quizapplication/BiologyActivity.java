@@ -76,6 +76,7 @@ public class BiologyActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Call API here to make sure to have this question
         setContentView(R.layout.activity_biology);
         fab = findViewById(R.id.fab);
         fab1 = findViewById(R.id.fab1);

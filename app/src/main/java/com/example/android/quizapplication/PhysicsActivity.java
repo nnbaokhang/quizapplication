@@ -3,10 +3,13 @@ package com.example.android.quizapplication;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,12 +26,24 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class PhysicsActivity extends AppCompatActivity {
 
     String doBetter = "You can do better!" + System.getProperty("line.separator") + System.getProperty("line.separator") + "Try again?";
     String poor = "Brush up your knowledge, maybe?";
     String congrats = "Well done!" + System.getProperty("line.separator") + System.getProperty("line.separator") + "You are awesome!";
+
+    ArrayList<Physic> physicArrayList = new ArrayList<>();
     // Question 1
+    String answer1;
+    RadioGroup  radioGroup1;
     RadioButton question1_choice1;
     RadioButton question1_choice2;
     RadioButton question1_choice3;
@@ -44,6 +59,7 @@ public class PhysicsActivity extends AppCompatActivity {
     CheckBox question3_choice3;
     CheckBox question3_choice4;
     // Question 4
+    String   question4_sol;
     EditText question4_answer;
     // Question 5
     RadioButton question5_choice1;
@@ -75,18 +91,74 @@ public class PhysicsActivity extends AppCompatActivity {
     private Animation fab_open, fab_close, rotate_forward, rotate_backward;
     ConstraintLayout scroll;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void convertToJsonArray(String key,String response){
+        JSONParser parser = new JSONParser();
+        try {
+            JSONObject json = (JSONObject) parser.parse(response);
+            JSONArray subjectList = (JSONArray) Objects.requireNonNull(json.get(key));
+            //   subjectArrayList = subjectList;
+            for(int i = 0 ; i < subjectList.size(); i++){
+
+                JSONArray test = (JSONArray) subjectList.get(i);
+                System.out.println(test.get(1));
+                JSONObject jsonObject = (JSONObject) test.get(1);
+                System.out.println(jsonObject);
+               // physicArrayList.add(new Physic((String) jsonObject.get("question"),(String) jsonObject.get("a1"),(String) jsonObject.get("a2"),(String) jsonObject.get("a3"),
+                   //  (String) jsonObject.get("a4"),(String) jsonObject.get("sa"),(Boolean) jsonObject.get("mul")));
+            }
+
+
+        } catch(ParseException e){
+            e.printStackTrace();
+        }
+    }
+    public String sendRequest()  {
+        try {
+            HttpRequest request =  HttpRequest.get("https://quizapp007.herokuapp.com/physic");
+            Log.d("status",String.valueOf(request.code()));
+
+            if (request.ok()) {
+                return String.valueOf(request.body());
+            }
+        } catch (HttpRequest.HttpRequestException e){
+            Log.d("http", "Wrong");
+            e.printStackTrace();
+            return "";
+        }
+        return "";
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        String response;
+        response = sendRequest();
+        convertToJsonArray("subject",response);
+
         setContentView(R.layout.activity_physics);
-        fab = findViewById(R.id.fab);
-        fab1 = findViewById(R.id.fab1);
-        fab2 = findViewById(R.id.fab2);
-        fab3 = findViewById(R.id.fab3);
-        question1_choice1 = findViewById(R.id.question1_choice1);
-        question1_choice2 = findViewById(R.id.question1_choice2);
-        question1_choice3 = findViewById(R.id.question1_choice3);
-        question1_choice4 = findViewById(R.id.question1_choice4);
+
+
+        // Basically I have to mak
+        radioGroup1 = (RadioGroup) findViewById(R.id.radiogroup1);
+        final TextView question1 = (TextView)findViewById(R.id.question1);
+        question1.setText(physicArrayList.get(0).getQuestion());
+        question1_choice1 = (RadioButton) findViewById(R.id.question1_choice1);
+        question1_choice2 = (RadioButton) findViewById(R.id.question1_choice2);
+        question1_choice3 = (RadioButton) findViewById(R.id.question1_choice3);
+        question1_choice4 = (RadioButton) findViewById(R.id.question1_choice4);
+        answer1 = physicArrayList.get(0).getSA();
+        /*
+        question1_choice1.setText(physicArrayList.get(0).getA1());
+        question1_choice2.setText(physicArrayList.get(0).getA2());
+        question1_choice3.setText(physicArrayList.get(0).getA3());
+        question1_choice4.setText(physicArrayList.get(0).getA4());
+        */
+        TextView question2 = (TextView)findViewById(R.id.question2);
+        question2.setText(physicArrayList.get(1).getQuestion());
+
         question2_choice1 = findViewById(R.id.question2_choice1);
         question2_choice2 = findViewById(R.id.question2_choice2);
         question2_choice3 = findViewById(R.id.question2_choice3);
@@ -95,7 +167,13 @@ public class PhysicsActivity extends AppCompatActivity {
         question3_choice2 = findViewById(R.id.question3_choice2);
         question3_choice3 = findViewById(R.id.question3_choice3);
         question3_choice4 = findViewById(R.id.question3_choice4);
+
+        TextView question4 = (TextView) findViewById(R.id.question4);
+        question4.setText(physicArrayList.get(1).getQuestion());
+        question4_sol = physicArrayList.get(1).getSA();
         question4_answer = findViewById(R.id.question4_answer);
+
+
         question5_choice1 = findViewById(R.id.question5_choice1);
         question5_choice2 = findViewById(R.id.question5_choice2);
         question5_choice3 = findViewById(R.id.question5_choice3);
@@ -114,6 +192,13 @@ public class PhysicsActivity extends AppCompatActivity {
         question10_choice2 = findViewById(R.id.question10_choice2);
         question10_choice3 = findViewById(R.id.question10_choice3);
         question10_choice4 = findViewById(R.id.question10_choice4);
+
+        fab = findViewById(R.id.fab);
+        fab1 = findViewById(R.id.fab1);
+        fab2 = findViewById(R.id.fab2);
+        fab3 = findViewById(R.id.fab3);
+
+
         ScrollView view = findViewById(R.id.scroll_view);
         view.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
         view.setFocusable(true);
@@ -157,9 +242,16 @@ public class PhysicsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //------------------------------------------------------------------------------------------
-                // Question 1 - Correct Answer is #2
+                // Question 1
                 //------------------------------------------------------------------------------------------
-                if (question1_choice2.isChecked()) final_score++;
+                switch (radioGroup1.getCheckedRadioButtonId()){
+                    case R.id.question1_choice1:  if(question1_choice1.getText().equals(answer1)) final_score++; break;
+                    case R.id.question1_choice2:  if(question1_choice2.getText().equals(answer1)) final_score++; break;
+                    case R.id.question1_choice3:  if(question1_choice3.getText().equals(answer1)) final_score++; break;
+                    case R.id.question1_choice4:  if(question1_choice4.getText().equals(answer1)) final_score++; break;
+                    default:
+                        break;
+                }
                 //------------------------------------------------------------------------------------------
                 // Question 2 - Correct Answer is #1
                 //------------------------------------------------------------------------------------------
@@ -173,7 +265,7 @@ public class PhysicsActivity extends AppCompatActivity {
                 //------------------------------------------------------------------------------------------
                 // Question 4 - Correct Answer is Stephen Hawking
                 //------------------------------------------------------------------------------------------
-                if (question4_answer.getText().toString().toLowerCase().equals("stephen hawking"))
+                if (question4_answer.getText().toString().toLowerCase().equals(question4_sol.toLowerCase()))
                     final_score++;
                 //------------------------------------------------------------------------------------------
                 // Question 5 - Correct Answer is #2
@@ -276,5 +368,7 @@ public class PhysicsActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(sharingIntent, "Share via"));
             }
         });
+
     }
+
 }

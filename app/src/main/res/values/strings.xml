@@ -1,4 +1,5 @@
 <resources>
+    <color name="white">#FFFFFF</color>
     <string name="app_name">Quiz Application</string>
     <string name="title_activity_floating">FloatingActivity</string>
     <string name="phy_q1">The absorption of ink by blotting paper involves</string>
@@ -121,6 +122,7 @@
     <string name="answer_the_questions">Answer the questions</string>
     <string name="play">Play!</string>
     <string name="physics">Physics</string>
+    <string name="computer">Computer</string>
     <string name="chemistry">Chemistry</string>
     <string name="biology">Biology</string>
     <string name="more_topics">More topics coming soon!</string>
